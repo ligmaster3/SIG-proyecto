@@ -62,7 +62,7 @@ function obtenerPrestamosPorCategoria($limite = 5)
 }
 
 // Función para obtener préstamos por carrera
-function obtenerPrestamosPorCarrera($limite = 5)
+function obtenerPrestamosPorCarrera($limite = 1000)
 {
     $sql = "SELECT ca.nombre_carrera, COUNT(p.id_prestamo) as total
             FROM prestamos p
@@ -129,4 +129,68 @@ function registrarDevolucion($id_prestamo)
     }
 
     return false;
+}
+
+// Función para obtener libros disponibles
+function obtenerLibrosDisponibles() {
+    $sql = "SELECT l.id_libro, l.titulo, l.autor, c.nombre_categoria
+            FROM libros l
+            JOIN categorias c ON l.id_categoria = c.id_categoria
+            WHERE l.disponible = TRUE
+            ORDER BY l.titulo";
+    
+    $stmt = ejecutarConsulta($sql);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Función para obtener estudiantes activos
+function obtenerEstudiantesActivos() {
+    $sql = "SELECT e.id_estudiante, e.nombre, e.apellido, e.codigo_estudiante, c.nombre_carrera
+            FROM estudiantes e
+            JOIN carreras c ON e.id_carrera = c.id_carrera
+            ORDER BY e.apellido, e.nombre";
+    
+    $stmt = ejecutarConsulta($sql);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Función para obtener préstamos activos por estudiante
+function obtenerPrestamosActivos($id_estudiante) {
+    $sql = "SELECT p.id_prestamo, l.titulo, p.fecha_prestamo, p.fecha_devolucion_estimada, p.estado
+            FROM prestamos p
+            JOIN libros l ON p.id_libro = l.id_libro
+            WHERE p.id_estudiante = ? AND (p.estado = 'Pendiente' OR p.estado = 'Atrasado')
+            ORDER BY p.fecha_prestamo DESC";
+    
+    $stmt = ejecutarConsulta($sql, [$id_estudiante]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Función para obtener historial de préstamos
+function obtenerHistorialPrestamos($id_estudiante = null, $id_libro = null, $limite = 10) {
+    $sql = "SELECT p.*, 
+                   e.nombre as estudiante_nombre, e.apellido as estudiante_apellido, e.codigo_estudiante,
+                   l.titulo as libro_titulo, l.autor as libro_autor
+            FROM prestamos p
+            JOIN estudiantes e ON p.id_estudiante = e.id_estudiante
+            JOIN libros l ON p.id_libro = l.id_libro
+            WHERE 1=1";
+    
+    $params = [];
+    
+    if ($id_estudiante) {
+        $sql .= " AND p.id_estudiante = ?";
+        $params[] = $id_estudiante;
+    }
+    
+    if ($id_libro) {
+        $sql .= " AND p.id_libro = ?";
+        $params[] = $id_libro;
+    }
+    
+    $sql .= " ORDER BY p.fecha_prestamo DESC LIMIT ?";
+    $params[] = $limite;
+    
+    $stmt = ejecutarConsulta($sql, $params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

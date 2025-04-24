@@ -15,7 +15,6 @@ require_once 'config/connection.php';
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" href="assets/css/dashboard.css">
     <link rel="stylesheet" href="assets/css/libros.css">
 </head>
 
@@ -70,7 +69,7 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Gestión de Libros</h1>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#agregarLibroModal">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarLibroModal">
             <i class="fas fa-plus"></i> Agregar Libro
         </button>
     </div>
@@ -87,9 +86,9 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
                             <i class="fas fa-search"></i>
                         </button>
                         <?php if ($busqueda): ?>
-                            <a href="libros.php" class="btn btn-secondary">
-                                <i class="fas fa-times"></i>
-                            </a>
+                        <a href="libros.php" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                        </a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -114,35 +113,35 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
                     </thead>
                     <tbody>
                         <?php foreach ($libros as $libro): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($libro['titulo']); ?></td>
-                                <td><?php echo htmlspecialchars($libro['autor']); ?></td>
-                                <td><?php echo htmlspecialchars($libro['nombre_categoria']); ?></td>
-                                <td><?php echo htmlspecialchars($libro['isbn'] ?? 'N/A'); ?></td>
-                                <td>
-                                    <?php if ($libro['disponible'] && $libro['prestamos_activos'] == 0): ?>
-                                        <span class="badge badge-success">Disponible</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-danger">Prestado</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-info btn-editar"
-                                        data-id="<?php echo $libro['id_libro']; ?>"
-                                        data-titulo="<?php echo htmlspecialchars($libro['titulo']); ?>"
-                                        data-autor="<?php echo htmlspecialchars($libro['autor']); ?>"
-                                        data-categoria="<?php echo $libro['id_categoria']; ?>"
-                                        data-isbn="<?php echo htmlspecialchars($libro['isbn'] ?? ''); ?>"
-                                        data-anio="<?php echo $libro['año_publicacion']; ?>"
-                                        data-editorial="<?php echo htmlspecialchars($libro['editorial'] ?? ''); ?>">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger btn-eliminar"
-                                        data-id="<?php echo $libro['id_libro']; ?>">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td><?php echo htmlspecialchars($libro['titulo']); ?></td>
+                            <td><?php echo htmlspecialchars($libro['autor']); ?></td>
+                            <td><?php echo htmlspecialchars($libro['nombre_categoria']); ?></td>
+                            <td><?php echo htmlspecialchars($libro['isbn'] ?? 'N/A'); ?></td>
+                            <td>
+                                <?php if ($libro['disponible'] && $libro['prestamos_activos'] == 0): ?>
+                                <span class="badge badge-success">Disponible</span>
+                                <?php else: ?>
+                                <span class="badge badge-danger">Prestado</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-info btn-editar"
+                                    data-id="<?php echo $libro['id_libro']; ?>"
+                                    data-titulo="<?php echo htmlspecialchars($libro['titulo']); ?>"
+                                    data-autor="<?php echo htmlspecialchars($libro['autor']); ?>"
+                                    data-categoria="<?php echo $libro['id_categoria']; ?>"
+                                    data-isbn="<?php echo htmlspecialchars($libro['isbn'] ?? ''); ?>"
+                                    data-anio="<?php echo $libro['año_publicacion']; ?>"
+                                    data-editorial="<?php echo htmlspecialchars($libro['editorial'] ?? ''); ?>">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger btn-eliminar"
+                                    data-id="<?php echo $libro['id_libro']; ?>">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -152,30 +151,30 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
                     <?php if ($pagina > 1): ?>
-                        <li class="page-item">
-                            <a class="page-link"
-                                href="libros.php?pagina=<?php echo $pagina - 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
-                                Anterior
-                            </a>
-                        </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="libros.php?pagina=<?php echo $pagina - 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
+                            Anterior
+                        </a>
+                    </li>
                     <?php endif; ?>
 
                     <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                        <li class="page-item <?php echo $i == $pagina ? 'active' : ''; ?>">
-                            <a class="page-link"
-                                href="libros.php?pagina=<?php echo $i; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
-                                <?php echo $i; ?>
-                            </a>
-                        </li>
+                    <li class="page-item <?php echo $i == $pagina ? 'active' : ''; ?>">
+                        <a class="page-link"
+                            href="libros.php?pagina=<?php echo $i; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
+                            <?php echo $i; ?>
+                        </a>
+                    </li>
                     <?php endfor; ?>
 
                     <?php if ($pagina < $total_paginas): ?>
-                        <li class="page-item">
-                            <a class="page-link"
-                                href="libros.php?pagina=<?php echo $pagina + 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
-                                Siguiente
-                            </a>
-                        </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="libros.php?pagina=<?php echo $pagina + 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
+                            Siguiente
+                        </a>
+                    </li>
                     <?php endif; ?>
                 </ul>
             </nav>
@@ -190,7 +189,7 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="agregarLibroModalLabel">Agregar Nuevo Libro</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -210,9 +209,9 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
                         <select class="form-control" id="categoria" name="categoria" required>
                             <option value="">Seleccione una categoría</option>
                             <?php foreach ($categorias as $categoria): ?>
-                                <option value="<?php echo $categoria['id_categoria']; ?>">
-                                    <?php echo htmlspecialchars($categoria['nombre_categoria']); ?>
-                                </option>
+                            <option value="<?php echo $categoria['id_categoria']; ?>">
+                                <?php echo htmlspecialchars($categoria['nombre_categoria']); ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -231,7 +230,7 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar Libro</button>
                 </div>
             </form>
@@ -246,7 +245,7 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editarLibroModalLabel">Editar Libro</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -267,9 +266,9 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
                         <select class="form-control" id="editar_categoria" name="categoria" required>
                             <option value="">Seleccione una categoría</option>
                             <?php foreach ($categorias as $categoria): ?>
-                                <option value="<?php echo $categoria['id_categoria']; ?>">
-                                    <?php echo htmlspecialchars($categoria['nombre_categoria']); ?>
-                                </option>
+                            <option value="<?php echo $categoria['id_categoria']; ?>">
+                                <?php echo htmlspecialchars($categoria['nombre_categoria']); ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -288,7 +287,7 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </div>
             </form>
@@ -303,7 +302,7 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmarEliminarModalLabel">Confirmar Eliminación</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -311,7 +310,7 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
                 ¿Está seguro que desea eliminar este libro? Esta acción no se puede deshacer.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <form id="formEliminarLibro" action="includes/acciones_libros.php" method="POST"
                     style="display: inline;">
                     <input type="hidden" name="accion" value="eliminar">
@@ -326,35 +325,35 @@ $categorias = $stmt_categorias->fetchAll(PDO::FETCH_ASSOC);
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // Modal de editar libro
-        $('.btn-editar').click(function() {
-            const id = $(this).data('id');
-            const titulo = $(this).data('titulo');
-            const autor = $(this).data('autor');
-            const categoria = $(this).data('categoria');
-            const isbn = $(this).data('isbn');
-            const anio = $(this).data('anio');
-            const editorial = $(this).data('editorial');
+$(document).ready(function() {
+    // Modal de editar libro
+    $('.btn-editar').click(function() {
+        const id = $(this).data('id');
+        const titulo = $(this).data('titulo');
+        const autor = $(this).data('autor');
+        const categoria = $(this).data('categoria');
+        const isbn = $(this).data('isbn');
+        const anio = $(this).data('anio');
+        const editorial = $(this).data('editorial');
 
-            $('#editar_id_libro').val(id);
-            $('#editar_titulo').val(titulo);
-            $('#editar_autor').val(autor);
-            $('#editar_categoria').val(categoria);
-            $('#editar_isbn').val(isbn);
-            $('#editar_anio').val(anio);
-            $('#editar_editorial').val(editorial);
+        $('#editar_id_libro').val(id);
+        $('#editar_titulo').val(titulo);
+        $('#editar_autor').val(autor);
+        $('#editar_categoria').val(categoria);
+        $('#editar_isbn').val(isbn);
+        $('#editar_anio').val(anio);
+        $('#editar_editorial').val(editorial);
 
-            $('#editarLibroModal').modal('show');
-        });
-
-        // Modal de eliminar libro
-        $('.btn-eliminar').click(function() {
-            const id = $(this).data('id');
-            $('#eliminar_id_libro').val(id);
-            $('#confirmarEliminarModal').modal('show');
-        });
+        $('#editarLibroModal').modal('show');
     });
+
+    // Modal de eliminar libro
+    $('.btn-eliminar').click(function() {
+        const id = $(this).data('id');
+        $('#eliminar_id_libro').val(id);
+        $('#confirmarEliminarModal').modal('show');
+    });
+});
 </script>
 
 <!-- Contenedor para notificaciones -->
