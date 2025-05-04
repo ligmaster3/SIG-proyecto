@@ -206,7 +206,7 @@ body {
 .card-header h2 {
   font-size: 1.2rem;
   font-weight: 600;
-  color: var(--dark);
+  color: var(--light);
   margin: 0;
 }
 
@@ -413,7 +413,4 @@ body {
   }
 }
 
-
-
-/* reportes */
 
