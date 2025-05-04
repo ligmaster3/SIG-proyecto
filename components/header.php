@@ -59,8 +59,8 @@ if (!isset($_SESSION['usuario'])) {
                     <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'prestamos.php' ? 'active' : ''; ?>">
                         <a href="prestamos.php"><i class="fas fa-exchange-alt"></i> Préstamos</a>
                     </li>
-                    <li>
-                        <a href="#"><i class="fas fa-file-alt"></i> Reportes</a>
+                    <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'reportes.php' ? 'active' : ''; ?>">
+                        <a href="reportes.php"><i class="fas fa-file-alt"></i> Reportes</a>
                     </li>
                     <?php if ($_SESSION['rol'] == 'Administrador'): ?>
                     <li>

@@ -51,141 +51,141 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        :root {
-            --primary: #4e73df;
-            --primary-dark: #2e59d9;
-            --light: #f8f9fc;
-            --dark: #5a5c69;
-        }
+    :root {
+        --primary: #4e73df;
+        --primary-dark: #2e59d9;
+        --light: #f8f9fc;
+        --dark: #5a5c69;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--light);
-            color: var(--dark);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-image: linear-gradient(rgba(78, 115, 223, 0.5), rgba(78, 115, 223, 0.5)), url('assets/images/library-bg.jpg');
-            background-size: cover;
-            background-position: center;
-        }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--light);
+        color: var(--dark);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-image: linear-gradient(rgba(78, 115, 223, 0.5), rgba(78, 115, 223, 0.5)), url('assets/images/library-bg.jpg');
+        background-size: cover;
+        background-position: center;
+    }
 
-        .register-container {
-            width: 100%;
-            max-width: 500px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-        }
+    .register-container {
+        width: 100%;
+        max-width: 500px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+    }
 
-        .register-header {
-            background-color: var(--primary);
-            color: white;
-            padding: 1.5rem;
-            text-align: center;
-        }
+    .register-header {
+        background-color: var(--primary);
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+    }
 
-        .register-header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
+    .register-header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
 
-        .register-body {
-            padding: 2rem;
-        }
+    .register-body {
+        padding: 2rem;
+    }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
 
-        .input-group {
-            position: relative;
-        }
+    .input-group {
+        position: relative;
+    }
 
-        .input-group input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: 1px solid #d1d3e2;
-            border-radius: 0.35rem;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
+    .input-group input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
 
-        .input-group input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-        }
+    .input-group input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
 
-        .input-group i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #d1d3e2;
-        }
+    .input-group i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #d1d3e2;
+    }
 
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 0.35rem;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 0.35rem;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
 
-        .btn:hover {
-            background-color: var(--primary-dark);
-        }
+    .btn:hover {
+        background-color: var(--primary-dark);
+    }
 
-        .error-message {
-            color: #e74a3b;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            text-align: center;
-        }
+    .error-message {
+        color: #e74a3b;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
 
-        .success-message {
-            color: #1cc88a;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            text-align: center;
-        }
+    .success-message {
+        color: #1cc88a;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
 
-        .register-footer {
-            text-align: center;
-            padding: 1rem;
-            border-top: 1px solid #e3e6f0;
-            font-size: 0.875rem;
-        }
+    .register-footer {
+        text-align: center;
+        padding: 1rem;
+        border-top: 1px solid #e3e6f0;
+        font-size: 0.875rem;
+    }
 
-        .register-footer a {
-            color: var(--primary);
-            text-decoration: none;
-        }
+    .register-footer a {
+        color: var(--primary);
+        text-decoration: none;
+    }
 
-        .register-footer a:hover {
-            text-decoration: underline;
-        }
+    .register-footer a:hover {
+        text-decoration: underline;
+    }
     </style>
 </head>
 
@@ -197,11 +197,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <div class="register-body">
             <?php if (!empty($error)): ?>
-                <div class="error-message"><?php echo $error; ?></div>
+            <div class="error-message"><?php echo $error; ?></div>
             <?php endif; ?>
 
             <?php if (!empty($success)): ?>
-                <div class="success-message"><?php echo $success; ?></div>
+            <div class="success-message"><?php echo $success; ?></div>
             <?php endif; ?>
 
             <form action="register.php" method="POST">
