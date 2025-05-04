@@ -81,3 +81,7 @@ require_once 'components/funciones.php';
 
 
 </div>
+
+<?php
+require_once 'components/footer.php';
+?>
