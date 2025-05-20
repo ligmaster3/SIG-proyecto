@@ -68,10 +68,11 @@ if (!isset($_SESSION['usuario'])) {
                     </li>
                     <?php endif; ?>
                 </ul>
+
+                <div class="sidebar-footer">
+                    <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                </div>
             </nav>
-            <div class="sidebar-footer">
-                <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
-            </div>
         </aside>
         <main class="main-content">
             <header class="top-bar">
