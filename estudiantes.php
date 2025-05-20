@@ -104,9 +104,9 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                             <i class="fas fa-search"></i>
                         </button>
                         <?php if ($busqueda): ?>
-                            <a href="estudiantes.php" class="btn btn-secondary">
-                                <i class="fas fa-times"></i>
-                            </a>
+                        <a href="estudiantes.php" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                        </a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -133,52 +133,37 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                     </thead>
                     <tbody>
                         <?php foreach ($estudiantes as $estudiante): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?></td>
-                                <td><?php echo htmlspecialchars($estudiante['apellido'] . ', ' . $estudiante['nombre']); ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($estudiante['nombre_carrera']); ?></td>
-                                <td><?php echo htmlspecialchars($estudiante['nombre_facultad']); ?></td>
-                                <td><?php echo htmlspecialchars($estudiante['genero']); ?></td>
-                                <td><?php echo htmlspecialchars($estudiante['hora_entrada'] ? date('d/m/Y H:i', strtotime($estudiante['hora_entrada'])) : '-'); ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($estudiante['hora_salida'] ? date('d/m/Y H:i', strtotime($estudiante['hora_salida'])) : '-'); ?>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning btn-editar" data-toggle="modal"
-                                        data-target="#editarEstudianteModal"
-                                        data-id="<?php echo $estudiante['id_estudiante']; ?>"
-                                        data-codigo="<?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?>"
-                                        data-nombre="<?php echo htmlspecialchars($estudiante['nombre']); ?>"
-                                        data-apellido="<?php echo htmlspecialchars($estudiante['apellido']); ?>"
-                                        data-genero="<?php echo $estudiante['genero']; ?>"
-                                        data-carrera="<?php echo $estudiante['id_carrera']; ?>"
-                                        data-email="<?php echo htmlspecialchars($estudiante['email'] ?? ''); ?>">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger btn-eliminar" data-toggle="modal"
-                                        data-target="#confirmarEliminarModal"
-                                        data-id="<?php echo $estudiante['id_estudiante']; ?>">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <!-- Mostrar resumen de registros académicos -->
-                                    <?php if (!empty($registros_academicos[$estudiante['id_estudiante']])): ?>
-                                        <div class="mt-2">
-                                            <strong>Asistencias recientes:</strong>
-                                            <ul style="font-size: 0.85em; margin-bottom: 0;">
-                                                <?php foreach ($registros_academicos[$estudiante['id_estudiante']] as $reg): ?>
-                                                    <li>
-                                                        Entrada:
-                                                        <?php echo htmlspecialchars($reg['fecha_entrada'] ? date('d/m/Y H:i', strtotime($reg['fecha_entrada'])) : '-'); ?>,
-                                                        Salida:
-                                                        <?php echo htmlspecialchars($reg['fecha_salida'] ? date('d/m/Y H:i', strtotime($reg['fecha_salida'])) : '-'); ?>
-                                                    </li>
-                                                <?php endforeach; ?>
-                                            </ul>
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td><?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?></td>
+                            <td><?php echo htmlspecialchars($estudiante['apellido'] . ', ' . $estudiante['nombre']); ?>
+                            </td>
+                            <td><?php echo htmlspecialchars($estudiante['nombre_carrera']); ?></td>
+                            <td><?php echo htmlspecialchars($estudiante['nombre_facultad']); ?></td>
+                            <td><?php echo htmlspecialchars($estudiante['genero']); ?></td>
+                            <td><?php echo htmlspecialchars($estudiante['hora_entrada'] ? date('d/m/Y H:i', strtotime($estudiante['hora_entrada'])) : '-'); ?>
+                            </td>
+                            <td><?php echo htmlspecialchars($estudiante['hora_salida'] ? date('d/m/Y H:i', strtotime($estudiante['hora_salida'])) : '-'); ?>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-warning btn-editar" data-toggle="modal"
+                                    data-target="#editarEstudianteModal"
+                                    data-id="<?php echo $estudiante['id_estudiante']; ?>"
+                                    data-codigo="<?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?>"
+                                    data-nombre="<?php echo htmlspecialchars($estudiante['nombre']); ?>"
+                                    data-apellido="<?php echo htmlspecialchars($estudiante['apellido']); ?>"
+                                    data-genero="<?php echo $estudiante['genero']; ?>"
+                                    data-carrera="<?php echo $estudiante['id_carrera']; ?>"
+                                    data-email="<?php echo htmlspecialchars($estudiante['email'] ?? ''); ?>">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger btn-eliminar" data-toggle="modal"
+                                    data-target="#confirmarEliminarModal"
+                                    data-id="<?php echo $estudiante['id_estudiante']; ?>">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                            </td>
+                        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -188,30 +173,30 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
                     <?php if ($pagina > 1): ?>
-                        <li class="page-item">
-                            <a class="page-link"
-                                href="estudiantes.php?pagina=<?php echo $pagina - 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
-                                Anterior
-                            </a>
-                        </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="estudiantes.php?pagina=<?php echo $pagina - 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
+                            Anterior
+                        </a>
+                    </li>
                     <?php endif; ?>
 
                     <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                        <li class="page-item <?php echo $i == $pagina ? 'active' : ''; ?>">
-                            <a class="page-link"
-                                href="estudiantes.php?pagina=<?php echo $i; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
-                                <?php echo $i; ?>
-                            </a>
-                        </li>
+                    <li class="page-item <?php echo $i == $pagina ? 'active' : ''; ?>">
+                        <a class="page-link"
+                            href="estudiantes.php?pagina=<?php echo $i; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
+                            <?php echo $i; ?>
+                        </a>
+                    </li>
                     <?php endfor; ?>
 
                     <?php if ($pagina < $total_paginas): ?>
-                        <li class="page-item">
-                            <a class="page-link"
-                                href="estudiantes.php?pagina=<?php echo $pagina + 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
-                                Siguiente
-                            </a>
-                        </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="estudiantes.php?pagina=<?php echo $pagina + 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
+                            Siguiente
+                        </a>
+                    </li>
                     <?php endif; ?>
                 </ul>
             </nav>
@@ -257,9 +242,9 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                         <select class="form-select" id="carrera" name="carrera" required>
                             <option value="">Seleccione una carrera</option>
                             <?php foreach ($carreras as $carrera): ?>
-                                <option value="<?= $carrera['id_carrera']; ?>">
-                                    <?= htmlspecialchars($carrera['nombre_facultad'] . ' - ' . $carrera['nombre_carrera']); ?>
-                                </option>
+                            <option value="<?= $carrera['id_carrera']; ?>">
+                                <?= htmlspecialchars($carrera['nombre_facultad'] . ' - ' . $carrera['nombre_carrera']); ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -316,9 +301,9 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                         <select class="form-control" id="editar_carrera" name="carrera" required>
                             <option value="">Seleccione una carrera</option>
                             <?php foreach ($carreras as $carrera): ?>
-                                <option value="<?php echo $carrera['id_carrera']; ?>">
-                                    <?php echo htmlspecialchars($carrera['nombre_facultad'] . ' - ' . $carrera['nombre_carrera']); ?>
-                                </option>
+                            <option value="<?php echo $carrera['id_carrera']; ?>">
+                                <?php echo htmlspecialchars($carrera['nombre_facultad'] . ' - ' . $carrera['nombre_carrera']); ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -377,12 +362,12 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
 <div id="notificaciones"></div>
 
 <script>
-    // Función para mostrar notificaciones
-    function mostrarNotificacion(mensaje, tipo) {
-        var icono = tipo === 'success' ? 'check-circle' : 'exclamation-circle';
-        var color = tipo === 'success' ? 'success' : 'danger';
+// Función para mostrar notificaciones
+function mostrarNotificacion(mensaje, tipo) {
+    var icono = tipo === 'success' ? 'check-circle' : 'exclamation-circle';
+    var color = tipo === 'success' ? 'success' : 'danger';
 
-        var notificacion = `
+    var notificacion = `
         <div class="alert alert-${color} alert-dismissible fade show" role="alert">
             <i class="fas fa-${icono} mr-2"></i>
             ${mensaje}
@@ -392,108 +377,108 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
         </div>
     `;
 
-        // Insertar la notificación al principio del contenedor
-        $('.container-fluid').prepend(notificacion);
+    // Insertar la notificación al principio del contenedor
+    $('.container-fluid').prepend(notificacion);
 
-        // Auto cerrar después de 5 segundos
-        setTimeout(function() {
-            $('.alert').alert('close');
-        }, 5000);
-    }
+    // Auto cerrar después de 5 segundos
+    setTimeout(function() {
+        $('.alert').alert('close');
+    }, 5000);
+}
 
-    $(document).ready(function() {
-        // Mostrar modal de edición
-        $('.btn-editar').click(function() {
-            var id = $(this).data('id');
-            var codigo = $(this).data('codigo');
-            var nombre = $(this).data('nombre');
-            var apellido = $(this).data('apellido');
-            var genero = $(this).data('genero');
-            var carrera = $(this).data('carrera');
-            var email = $(this).data('email');
-            var hora_entrada = $(this).closest('tr').find('td').eq(5).text();
-            var hora_salida = $(this).closest('tr').find('td').eq(6).text();
+$(document).ready(function() {
+    // Mostrar modal de edición
+    $('.btn-editar').click(function() {
+        var id = $(this).data('id');
+        var codigo = $(this).data('codigo');
+        var nombre = $(this).data('nombre');
+        var apellido = $(this).data('apellido');
+        var genero = $(this).data('genero');
+        var carrera = $(this).data('carrera');
+        var email = $(this).data('email');
+        var hora_entrada = $(this).closest('tr').find('td').eq(5).text();
+        var hora_salida = $(this).closest('tr').find('td').eq(6).text();
 
-            $('#editar_id_estudiante').val(id);
-            $('#editar_codigo').val(codigo);
-            $('#editar_nombre').val(nombre);
-            $('#editar_apellido').val(apellido);
-            $('#editar_genero').val(genero);
-            $('#editar_carrera').val(carrera);
-            $('#editar_email').val(email);
-            $('#editar_hora_entrada').val(convertirFecha(hora_entrada));
-            $('#editar_hora_salida').val(convertirFecha(hora_salida));
+        $('#editar_id_estudiante').val(id);
+        $('#editar_codigo').val(codigo);
+        $('#editar_nombre').val(nombre);
+        $('#editar_apellido').val(apellido);
+        $('#editar_genero').val(genero);
+        $('#editar_carrera').val(carrera);
+        $('#editar_email').val(email);
+        $('#editar_hora_entrada').val(convertirFecha(hora_entrada));
+        $('#editar_hora_salida').val(convertirFecha(hora_salida));
 
-            $('#editarEstudianteModal').modal('show');
-        });
-
-        // Mostrar modal de confirmación de eliminación
-        $('.btn-eliminar').click(function() {
-            var id = $(this).data('id');
-            $('#eliminar_id_estudiante').val(id);
-            $('#confirmarEliminarModal').modal('show');
-        });
-
-        // Manejar envío de formularios con AJAX
-        $('#formAgregarEstudiante, #formEditarEstudiante, #formEliminarEstudiante').submit(function(e) {
-            e.preventDefault();
-            var form = $(this);
-            var formData = form.serialize();
-            var url = form.attr('action');
-            var accion = form.find('input[name="accion"]').val();
-
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: formData,
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        var mensaje = '';
-                        switch (accion) {
-                            case 'agregar':
-                                mensaje = 'Estudiante agregado correctamente';
-                                break;
-                            case 'editar':
-                                mensaje = 'Estudiante actualizado correctamente';
-                                break;
-                            case 'eliminar':
-                                mensaje = 'Estudiante eliminado correctamente';
-                                break;
-                        }
-                        mostrarNotificacion(mensaje, 'success');
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1500);
-                    } else {
-                        mostrarNotificacion(response.message ||
-                            'Error al procesar la solicitud', 'error');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    var mensajeError = 'Error al procesar la solicitud';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        mensajeError = xhr.responseJSON.message;
-                    }
-                    mostrarNotificacion(mensajeError, 'error');
-                }
-            });
-        });
-
-        // Cerrar modales después de enviar el formulario
-        $('#formAgregarEstudiante, #formEditarEstudiante, #formEliminarEstudiante').on('submit', function() {
-            $(this).closest('.modal').modal('hide');
-        });
-
-        // Convertir formato dd/mm/yyyy hh:mm a yyyy-mm-ddThh:mm para input type datetime-local
-        function convertirFecha(fecha) {
-            if (!fecha || fecha === '-') return '';
-            var partes = fecha.split(' ');
-            var fechaPartes = partes[0].split('/');
-            var hora = partes[1] || '00:00';
-            return fechaPartes[2] + '-' + fechaPartes[1] + '-' + fechaPartes[0] + 'T' + hora;
-        }
+        $('#editarEstudianteModal').modal('show');
     });
+
+    // Mostrar modal de confirmación de eliminación
+    $('.btn-eliminar').click(function() {
+        var id = $(this).data('id');
+        $('#eliminar_id_estudiante').val(id);
+        $('#confirmarEliminarModal').modal('show');
+    });
+
+    // Manejar envío de formularios con AJAX
+    $('#formAgregarEstudiante, #formEditarEstudiante, #formEliminarEstudiante').submit(function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var formData = form.serialize();
+        var url = form.attr('action');
+        var accion = form.find('input[name="accion"]').val();
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    var mensaje = '';
+                    switch (accion) {
+                        case 'agregar':
+                            mensaje = 'Estudiante agregado correctamente';
+                            break;
+                        case 'editar':
+                            mensaje = 'Estudiante actualizado correctamente';
+                            break;
+                        case 'eliminar':
+                            mensaje = 'Estudiante eliminado correctamente';
+                            break;
+                    }
+                    mostrarNotificacion(mensaje, 'success');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    mostrarNotificacion(response.message ||
+                        'Error al procesar la solicitud', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                var mensajeError = 'Error al procesar la solicitud';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    mensajeError = xhr.responseJSON.message;
+                }
+                mostrarNotificacion(mensajeError, 'error');
+            }
+        });
+    });
+
+    // Cerrar modales después de enviar el formulario
+    $('#formAgregarEstudiante, #formEditarEstudiante, #formEliminarEstudiante').on('submit', function() {
+        $(this).closest('.modal').modal('hide');
+    });
+
+    // Convertir formato dd/mm/yyyy hh:mm a yyyy-mm-ddThh:mm para input type datetime-local
+    function convertirFecha(fecha) {
+        if (!fecha || fecha === '-') return '';
+        var partes = fecha.split(' ');
+        var fechaPartes = partes[0].split('/');
+        var hora = partes[1] || '00:00';
+        return fechaPartes[2] + '-' + fechaPartes[1] + '-' + fechaPartes[0] + 'T' + hora;
+    }
+});
 </script>
 <!-- Modal para editar estudiante -->
 <?php
