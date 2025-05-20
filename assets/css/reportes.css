@@ -111,3 +111,19 @@ body {
     margin-bottom: 10px;
     color: #bdc3c7;
 }
+
+/* Tabla de reportes */
+@media (max-width: 768px) {
+    .reportes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .acciones-reporte {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .acciones-reporte .btn {
+        margin-top: 10px;
+    }
+}

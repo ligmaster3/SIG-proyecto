@@ -1,11 +1,14 @@
-<?php 
+<?php
 
 require_once 'components/header.php';
-require_once 'config/connection.php';
 require_once 'components/funciones.php';
-?>
-<div class="content-wrapper">
 
+$titulo_pagina = "Gestión de Reportes";
+
+?>
+
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes - Biblioteca CRUBA</title>
@@ -14,9 +17,9 @@ require_once 'components/funciones.php';
         rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/reportes.css">
+</head>
 
-
-
+<body>
     <div class="container">
         <div class="reportes-grid">
             <!-- Sección de Filtros -->
@@ -26,7 +29,7 @@ require_once 'components/funciones.php';
                 </div>
                 <div class="card-body">
                     <form id="filtrosForm" class="filtros-form">
-                        <div class="form-group">
+                        <div class="form-group">-
                             <label for="tipoReporte">Tipo de Reporte</label>
                             <select id="tipoReporte" name="tipoReporte" class="form-control" fdprocessedid="pmgbir">
                                 <option value="estudiantes">Reporte de Estudiantes</option>
@@ -80,7 +83,9 @@ require_once 'components/funciones.php';
     <script src="assets/js/reportes.js"></script>
 
 
-</div>
+</body>
+
+
 
 <?php
 require_once 'components/footer.php';

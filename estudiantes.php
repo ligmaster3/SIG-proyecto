@@ -2,7 +2,7 @@
 $titulo_pagina = "Gestión de Estudiantes";
 require_once 'components/header.php';
 require_once 'components/funciones.php';
-
+require_once 'config/connection.php';
 // Paginación
 $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 $por_pagina = 10;
@@ -26,7 +26,16 @@ $total_paginas = ceil($total_estudiantes / $por_pagina);
 // Obtener estudiantes
 if ($busqueda) {
     $sql = "SELECT e.*, c.nombre_carrera, f.nombre_facultad,
-                   (SELECT COUNT(*) FROM prestamos WHERE id_estudiante = e.id_estudiante) as total_prestamos
+                   (
+                       SELECT ra.fecha_entrada FROM registro_asistencia ra 
+                       WHERE ra.id_estudiante = e.id_estudiante 
+                       ORDER BY ra.fecha_entrada DESC LIMIT 1
+                   ) as hora_entrada,
+                   (
+                       SELECT ra.fecha_salida FROM registro_asistencia ra 
+                       WHERE ra.id_estudiante = e.id_estudiante 
+                       ORDER BY ra.fecha_entrada DESC LIMIT 1
+                   ) as hora_salida
             FROM estudiantes e
             JOIN carreras c ON e.id_carrera = c.id_carrera
             JOIN facultades f ON c.id_facultad = f.id_facultad
@@ -36,7 +45,16 @@ if ($busqueda) {
     $stmt = ejecutarConsulta($sql, [':busqueda' => "%$busqueda%"]);
 } else {
     $sql = "SELECT e.*, c.nombre_carrera, f.nombre_facultad,
-                   (SELECT COUNT(*) FROM prestamos WHERE id_estudiante = e.id_estudiante) as total_prestamos
+                   (
+                       SELECT ra.fecha_entrada FROM registro_asistencia ra 
+                       WHERE ra.id_estudiante = e.id_estudiante 
+                       ORDER BY ra.fecha_entrada DESC LIMIT 1
+                   ) as hora_entrada,
+                   (
+                       SELECT ra.fecha_salida FROM registro_asistencia ra 
+                       WHERE ra.id_estudiante = e.id_estudiante 
+                       ORDER BY ra.fecha_entrada DESC LIMIT 1
+                   ) as hora_salida
             FROM estudiantes e
             JOIN carreras c ON e.id_carrera = c.id_carrera
             JOIN facultades f ON c.id_facultad = f.id_facultad
@@ -46,6 +64,12 @@ if ($busqueda) {
 }
 $estudiantes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$registros_academicos = [];
+foreach ($estudiantes as $est) {
+    $stmt_reg = ejecutarConsulta("SELECT fecha_entrada, fecha_salida FROM registro_asistencia WHERE id_estudiante = ? ORDER BY fecha_entrada DESC LIMIT 5", [$est['id_estudiante']]);
+    $registros_academicos[$est['id_estudiante']] = $stmt_reg->fetchAll(PDO::FETCH_ASSOC);
+}
+
 // Obtener carreras para el formulario
 $stmt_carreras = ejecutarConsulta("
     SELECT c.id_carrera, c.nombre_carrera, f.nombre_facultad 
@@ -54,6 +78,9 @@ $stmt_carreras = ejecutarConsulta("
     ORDER BY f.nombre_facultad, c.nombre_carrera
 ");
 $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
+
+// Obtener registros académicos (asistencia) para cada estudiante
+
 ?>
 
 <div class="container-fluid">
@@ -65,7 +92,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
 
     </div>
 
-    <!-- Barra de búsqueda -->
+
     <div class="card shadow mb-4">
         <div class="card-body">
             <form method="GET" action="estudiantes.php" class="form-inline">
@@ -77,9 +104,9 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                             <i class="fas fa-search"></i>
                         </button>
                         <?php if ($busqueda): ?>
-                        <a href="estudiantes.php" class="btn btn-secondary">
-                            <i class="fas fa-times"></i>
-                        </a>
+                            <a href="estudiantes.php" class="btn btn-secondary">
+                                <i class="fas fa-times"></i>
+                            </a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -87,90 +114,104 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <!-- Tabla de estudiantes -->
+
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Código</th>
+                            <th>Cedula</th>
                             <th>Nombre</th>
                             <th>Carrera</th>
                             <th>Facultad</th>
                             <th>Género</th>
-                            <th>Préstamos</th>
+                            <th>Hora de entrada</th>
+                            <th>Hora de Salida</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($estudiantes as $estudiante): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?></td>
-                            <td><?php echo htmlspecialchars($estudiante['apellido'] . ', ' . $estudiante['nombre']); ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($estudiante['nombre_carrera']); ?></td>
-                            <td><?php echo htmlspecialchars($estudiante['nombre_facultad']); ?></td>
-                            <td><?php echo htmlspecialchars($estudiante['genero']); ?></td>
-                            <td><?php echo $estudiante['total_prestamos']; ?></td>
-                            <td>
-
-                                <a href="estudiante_detalle.php?id=<?php echo $estudiante['id_estudiante']; ?>"
-                                    class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <button class="btn btn-sm btn-warning btn-editar" data-toggle="modal"
-                                    data-target="#editarEstudianteModal"
-                                    data-id="<?php echo $estudiante['id_estudiante']; ?>"
-                                    data-codigo="<?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?>"
-                                    data-nombre="<?php echo htmlspecialchars($estudiante['nombre']); ?>"
-                                    data-apellido="<?php echo htmlspecialchars($estudiante['apellido']); ?>"
-                                    data-genero="<?php echo $estudiante['genero']; ?>"
-                                    data-carrera="<?php echo $estudiante['id_carrera']; ?>"
-                                    data-email="<?php echo htmlspecialchars($estudiante['email'] ?? ''); ?>"
-                                    data-telefono="<?php echo htmlspecialchars($estudiante['telefono'] ?? ''); ?>">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger btn-eliminar" data-toggle="modal"
-                                    data-target="#confirmarEliminarModal"
-                                    data-id="<?php echo $estudiante['id_estudiante']; ?>">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?></td>
+                                <td><?php echo htmlspecialchars($estudiante['apellido'] . ', ' . $estudiante['nombre']); ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($estudiante['nombre_carrera']); ?></td>
+                                <td><?php echo htmlspecialchars($estudiante['nombre_facultad']); ?></td>
+                                <td><?php echo htmlspecialchars($estudiante['genero']); ?></td>
+                                <td><?php echo htmlspecialchars($estudiante['hora_entrada'] ? date('d/m/Y H:i', strtotime($estudiante['hora_entrada'])) : '-'); ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($estudiante['hora_salida'] ? date('d/m/Y H:i', strtotime($estudiante['hora_salida'])) : '-'); ?>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning btn-editar" data-toggle="modal"
+                                        data-target="#editarEstudianteModal"
+                                        data-id="<?php echo $estudiante['id_estudiante']; ?>"
+                                        data-codigo="<?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?>"
+                                        data-nombre="<?php echo htmlspecialchars($estudiante['nombre']); ?>"
+                                        data-apellido="<?php echo htmlspecialchars($estudiante['apellido']); ?>"
+                                        data-genero="<?php echo $estudiante['genero']; ?>"
+                                        data-carrera="<?php echo $estudiante['id_carrera']; ?>"
+                                        data-email="<?php echo htmlspecialchars($estudiante['email'] ?? ''); ?>">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btn-eliminar" data-toggle="modal"
+                                        data-target="#confirmarEliminarModal"
+                                        data-id="<?php echo $estudiante['id_estudiante']; ?>">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <!-- Mostrar resumen de registros académicos -->
+                                    <?php if (!empty($registros_academicos[$estudiante['id_estudiante']])): ?>
+                                        <div class="mt-2">
+                                            <strong>Asistencias recientes:</strong>
+                                            <ul style="font-size: 0.85em; margin-bottom: 0;">
+                                                <?php foreach ($registros_academicos[$estudiante['id_estudiante']] as $reg): ?>
+                                                    <li>
+                                                        Entrada:
+                                                        <?php echo htmlspecialchars($reg['fecha_entrada'] ? date('d/m/Y H:i', strtotime($reg['fecha_entrada'])) : '-'); ?>,
+                                                        Salida:
+                                                        <?php echo htmlspecialchars($reg['fecha_salida'] ? date('d/m/Y H:i', strtotime($reg['fecha_salida'])) : '-'); ?>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Paginación -->
+
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
                     <?php if ($pagina > 1): ?>
-                    <li class="page-item">
-                        <a class="page-link"
-                            href="estudiantes.php?pagina=<?php echo $pagina - 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
-                            Anterior
-                        </a>
-                    </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="estudiantes.php?pagina=<?php echo $pagina - 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
+                                Anterior
+                            </a>
+                        </li>
                     <?php endif; ?>
 
                     <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                    <li class="page-item <?php echo $i == $pagina ? 'active' : ''; ?>">
-                        <a class="page-link"
-                            href="estudiantes.php?pagina=<?php echo $i; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
-                            <?php echo $i; ?>
-                        </a>
-                    </li>
+                        <li class="page-item <?php echo $i == $pagina ? 'active' : ''; ?>">
+                            <a class="page-link"
+                                href="estudiantes.php?pagina=<?php echo $i; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        </li>
                     <?php endfor; ?>
 
                     <?php if ($pagina < $total_paginas): ?>
-                    <li class="page-item">
-                        <a class="page-link"
-                            href="estudiantes.php?pagina=<?php echo $pagina + 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
-                            Siguiente
-                        </a>
-                    </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="estudiantes.php?pagina=<?php echo $pagina + 1; ?><?php echo $busqueda ? '&busqueda=' . urlencode($busqueda) : ''; ?>">
+                                Siguiente
+                            </a>
+                        </li>
                     <?php endif; ?>
                 </ul>
             </nav>
@@ -178,7 +219,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- Modal para agregar estudiante -->
+
 <div class="modal fade" id="agregarEstudianteModal" tabindex="-1" aria-labelledby="agregarEstudianteModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -216,19 +257,15 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                         <select class="form-select" id="carrera" name="carrera" required>
                             <option value="">Seleccione una carrera</option>
                             <?php foreach ($carreras as $carrera): ?>
-                            <option value="<?= $carrera['id_carrera']; ?>">
-                                <?= htmlspecialchars($carrera['nombre_facultad'] . ' - ' . $carrera['nombre_carrera']); ?>
-                            </option>
+                                <option value="<?= $carrera['id_carrera']; ?>">
+                                    <?= htmlspecialchars($carrera['nombre_facultad'] . ' - ' . $carrera['nombre_carrera']); ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email">
-                    </div>
-                    <div class="mb-3">
-                        <label for="telefono" class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" id="telefono" name="telefono">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -240,7 +277,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- Modal para editar estudiante -->
+
 <div class="modal fade" id="editarEstudianteModal" tabindex="-1" role="dialog"
     aria-labelledby="editarEstudianteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -279,9 +316,9 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                         <select class="form-control" id="editar_carrera" name="carrera" required>
                             <option value="">Seleccione una carrera</option>
                             <?php foreach ($carreras as $carrera): ?>
-                            <option value="<?php echo $carrera['id_carrera']; ?>">
-                                <?php echo htmlspecialchars($carrera['nombre_facultad'] . ' - ' . $carrera['nombre_carrera']); ?>
-                            </option>
+                                <option value="<?php echo $carrera['id_carrera']; ?>">
+                                    <?php echo htmlspecialchars($carrera['nombre_facultad'] . ' - ' . $carrera['nombre_carrera']); ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -290,8 +327,12 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                         <input type="email" class="form-control" id="editar_email" name="email">
                     </div>
                     <div class="form-group mb-3">
-                        <label for="editar_telefono">Teléfono</label>
-                        <input type="tel" class="form-control" id="editar_telefono" name="telefono">
+                        <label for="editar_hora_entrada">Hora de Entrada (última)</label>
+                        <input type="datetime-local" class="form-control" id="editar_hora_entrada" name="hora_entrada">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="editar_hora_salida">Hora de Salida (última)</label>
+                        <input type="datetime-local" class="form-control" id="editar_hora_salida" name="hora_salida">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -303,7 +344,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- Modal para confirmar eliminación -->
+
 <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" role="dialog"
     aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -333,13 +374,15 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<script>
-// Función para mostrar notificaciones
-function mostrarNotificacion(mensaje, tipo) {
-    var icono = tipo === 'success' ? 'check-circle' : 'exclamation-circle';
-    var color = tipo === 'success' ? 'success' : 'danger';
+<div id="notificaciones"></div>
 
-    var notificacion = `
+<script>
+    // Función para mostrar notificaciones
+    function mostrarNotificacion(mensaje, tipo) {
+        var icono = tipo === 'success' ? 'check-circle' : 'exclamation-circle';
+        var color = tipo === 'success' ? 'success' : 'danger';
+
+        var notificacion = `
         <div class="alert alert-${color} alert-dismissible fade show" role="alert">
             <i class="fas fa-${icono} mr-2"></i>
             ${mensaje}
@@ -349,99 +392,110 @@ function mostrarNotificacion(mensaje, tipo) {
         </div>
     `;
 
-    // Insertar la notificación al principio del contenedor
-    $('.container-fluid').prepend(notificacion);
+        // Insertar la notificación al principio del contenedor
+        $('.container-fluid').prepend(notificacion);
 
-    // Auto cerrar después de 5 segundos
-    setTimeout(function() {
-        $('.alert').alert('close');
-    }, 5000);
-}
+        // Auto cerrar después de 5 segundos
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+    }
 
-$(document).ready(function() {
-    // Mostrar modal de edición
-    $('.btn-editar').click(function() {
-        var id = $(this).data('id');
-        var codigo = $(this).data('codigo');
-        var nombre = $(this).data('nombre');
-        var apellido = $(this).data('apellido');
-        var genero = $(this).data('genero');
-        var carrera = $(this).data('carrera');
-        var email = $(this).data('email');
-        var telefono = $(this).data('telefono');
+    $(document).ready(function() {
+        // Mostrar modal de edición
+        $('.btn-editar').click(function() {
+            var id = $(this).data('id');
+            var codigo = $(this).data('codigo');
+            var nombre = $(this).data('nombre');
+            var apellido = $(this).data('apellido');
+            var genero = $(this).data('genero');
+            var carrera = $(this).data('carrera');
+            var email = $(this).data('email');
+            var hora_entrada = $(this).closest('tr').find('td').eq(5).text();
+            var hora_salida = $(this).closest('tr').find('td').eq(6).text();
 
-        $('#editar_id_estudiante').val(id);
-        $('#editar_codigo').val(codigo);
-        $('#editar_nombre').val(nombre);
-        $('#editar_apellido').val(apellido);
-        $('#editar_genero').val(genero);
-        $('#editar_carrera').val(carrera);
-        $('#editar_email').val(email);
-        $('#editar_telefono').val(telefono);
+            $('#editar_id_estudiante').val(id);
+            $('#editar_codigo').val(codigo);
+            $('#editar_nombre').val(nombre);
+            $('#editar_apellido').val(apellido);
+            $('#editar_genero').val(genero);
+            $('#editar_carrera').val(carrera);
+            $('#editar_email').val(email);
+            $('#editar_hora_entrada').val(convertirFecha(hora_entrada));
+            $('#editar_hora_salida').val(convertirFecha(hora_salida));
 
-        $('#editarEstudianteModal').modal('show');
-    });
-
-    // Mostrar modal de confirmación de eliminación
-    $('.btn-eliminar').click(function() {
-        var id = $(this).data('id');
-        $('#eliminar_id_estudiante').val(id);
-        $('#confirmarEliminarModal').modal('show');
-    });
-
-    // Manejar envío de formularios con AJAX
-    $('#formAgregarEstudiante, #formEditarEstudiante, #formEliminarEstudiante').submit(function(e) {
-        e.preventDefault();
-        var form = $(this);
-        var formData = form.serialize();
-        var url = form.attr('action');
-        var accion = form.find('input[name="accion"]').val();
-
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: formData,
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    var mensaje = '';
-                    switch (accion) {
-                        case 'agregar':
-                            mensaje = 'Estudiante agregado correctamente';
-                            break;
-                        case 'editar':
-                            mensaje = 'Estudiante actualizado correctamente';
-                            break;
-                        case 'eliminar':
-                            mensaje = 'Estudiante eliminado correctamente';
-                            break;
-                    }
-                    mostrarNotificacion(mensaje, 'success');
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1500);
-                } else {
-                    mostrarNotificacion(response.message ||
-                        'Error al procesar la solicitud', 'error');
-                }
-            },
-            error: function(xhr, status, error) {
-                var mensajeError = 'Error al procesar la solicitud';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    mensajeError = xhr.responseJSON.message;
-                }
-                mostrarNotificacion(mensajeError, 'error');
-            }
+            $('#editarEstudianteModal').modal('show');
         });
-    });
 
-    // Cerrar modales después de enviar el formulario
-    $('#formAgregarEstudiante, #formEditarEstudiante, #formEliminarEstudiante').on('submit', function() {
-        $(this).closest('.modal').modal('hide');
+        // Mostrar modal de confirmación de eliminación
+        $('.btn-eliminar').click(function() {
+            var id = $(this).data('id');
+            $('#eliminar_id_estudiante').val(id);
+            $('#confirmarEliminarModal').modal('show');
+        });
+
+        // Manejar envío de formularios con AJAX
+        $('#formAgregarEstudiante, #formEditarEstudiante, #formEliminarEstudiante').submit(function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var formData = form.serialize();
+            var url = form.attr('action');
+            var accion = form.find('input[name="accion"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        var mensaje = '';
+                        switch (accion) {
+                            case 'agregar':
+                                mensaje = 'Estudiante agregado correctamente';
+                                break;
+                            case 'editar':
+                                mensaje = 'Estudiante actualizado correctamente';
+                                break;
+                            case 'eliminar':
+                                mensaje = 'Estudiante eliminado correctamente';
+                                break;
+                        }
+                        mostrarNotificacion(mensaje, 'success');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        mostrarNotificacion(response.message ||
+                            'Error al procesar la solicitud', 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var mensajeError = 'Error al procesar la solicitud';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        mensajeError = xhr.responseJSON.message;
+                    }
+                    mostrarNotificacion(mensajeError, 'error');
+                }
+            });
+        });
+
+        // Cerrar modales después de enviar el formulario
+        $('#formAgregarEstudiante, #formEditarEstudiante, #formEliminarEstudiante').on('submit', function() {
+            $(this).closest('.modal').modal('hide');
+        });
+
+        // Convertir formato dd/mm/yyyy hh:mm a yyyy-mm-ddThh:mm para input type datetime-local
+        function convertirFecha(fecha) {
+            if (!fecha || fecha === '-') return '';
+            var partes = fecha.split(' ');
+            var fechaPartes = partes[0].split('/');
+            var hora = partes[1] || '00:00';
+            return fechaPartes[2] + '-' + fechaPartes[1] + '-' + fechaPartes[0] + 'T' + hora;
+        }
     });
-});
 </script>
-
+<!-- Modal para editar estudiante -->
 <?php
 require_once 'components/footer.php';
 ?>
