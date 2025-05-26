@@ -43,35 +43,41 @@ if (!isset($_SESSION['usuario'])) {
         <aside class="sidebar">
             <div class="logo-container">
                 <img src="assets/images/logo.png" alt="CRUBA Logo" class="logo">
-                <h1>Biblioteca CRUBA</h1>
+                <h1><span>Biblioteca CRUBA</span></h1>
             </div>
             <nav class="sidebar-nav">
                 <ul>
                     <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>">
-                        <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                        <a href="dashboard.php" title="Dashboard"><i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span></a>
                     </li>
+                    <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
+                        <a href="index.php" title="Inicio"><i class="fas fa-home"></i> <span>Inicio</span></a>
+                    </li>
+
                     <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'libros.php' ? 'active' : ''; ?>">
-                        <a href="libros.php"><i class="fas fa-book"></i> Libros</a>
+                        <a href="libros.php" title="Libros"><i class="fas fa-book"></i> <span>Libros</span></a>
                     </li>
                     <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'estudiantes.php' ? 'active' : ''; ?>">
-                        <a href="estudiantes.php"><i class="fas fa-book"></i> Estudiantes</a>
+                        <a href="estudiantes.php" title="Estudiantes"><i class="fas fa-book"></i>
+                            <span>Estudiantes</span></a>
                     </li>
                     <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'prestamos.php' ? 'active' : ''; ?>">
-                        <a href="prestamos.php"><i class="fas fa-exchange-alt"></i> Préstamos</a>
+                        <a href="prestamos.php" title="Préstamos"><i class="fas fa-exchange-alt"></i>
+                            <span>Préstamos</span></a>
                     </li>
                     <li class="<?php echo basename($_SERVER['PHP_SELF']) == 'reportes.php' ? 'active' : ''; ?>">
-                        <a href="reportes.php"><i class="fas fa-file-alt"></i> Reportes</a>
+                        <a href="reportes.php" title="Reportes"><i class="fas fa-file-alt"></i>
+                            <span>Reportes</span></a>
                     </li>
                     <?php if ($_SESSION['rol'] == 'Administrador'): ?>
                     <li>
-                        <a href="#"><i class="fas fa-cog"></i> Configuración</a>
+                        <a href="#" data-title="Configuración"><i class="fas fa-cog"></i> <span>Configuración</span></a>
                     </li>
                     <?php endif; ?>
                 </ul>
 
-                <div class="sidebar-footer">
-                    <a href="logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
-                </div>
+
             </nav>
         </aside>
         <main class="main-content">
@@ -83,8 +89,12 @@ if (!isset($_SESSION['usuario'])) {
                 <div class="user-info">
                     <span class="welcome">Bienvenido, <?php echo $_SESSION['nombre']; ?></span>
                     <div class="user-avatar">
-                        <i class="fas fa-user-circle"></i>
+                        <i class="fas fa-user-circle" title="Usuario"> </i>
                     </div>
+                    <!-- Botón Cerrar Sesión para móvil/sidebar colapsada -->
+                    <a href="logout.php" class="logout-btn top-bar-logout d-none d-lg-flex" title="Cerrar Sesión"><i
+                            class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span></a>
                 </div>
             </header>
+
             <div class="content-wrapper">
