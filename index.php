@@ -445,13 +445,29 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
 
+                            <!-- Lector QR -->
+                            <div id="formQR" class="hidden">
+                                <div class="scanner-container">
+                                    <div id="scanner-view"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-danger w-100" id="stopScanner">Detener
+                                        Escáner</button>
+                                </div>
+                                <div id="qrData" class="hidden">
+                                    <input type="hidden" id="qr_codigo" name="codigo_estudiante">
+                                    <input type="hidden" id="qr_nombre" name="nombre">
+                                    <input type="hidden" id="qr_apellido" name="apellido">
+                                    <input type="hidden" id="qr_genero" name="genero">
+                                    <input type="hidden" id="qr_carrera" name="id_carrera">
+                                </div>
+                            </div>
 
-                <div class="input-group">
-                    <label for="hora_entrada" class="form-label">Fecha y Hora de Entrada</label>
-                    <div class="input-field">
-                        <i class="input-icon fas fa-calendar-alt"></i>
-                        <input type="datetime-local" class="form-control has-icon" id="fecha_entrada"
-                            name="hora_entrada">
+                            <!-- Formulario OCR -->
+                            <div id="formOCR" class="hidden">
+                                <div class="mb-3">
+                                    <label for="ocrImage" class="form-label">Subir imagen del carnet</label>
+                                    <input class="form-control" type="file" id="ocrImage" accept="image/*">
                     </div>
                 </div>
                 <div class="input-group">
