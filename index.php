@@ -23,6 +23,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión Académica</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
     body {
         font-family: 'Poppins', sans-serif;
@@ -53,10 +54,18 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
         color: #333;
         line-height: 1.6;
         min-height: 100vh;
-        display: flex;
         align-items: center;
         justify-content: center;
         padding: 2rem 1rem;
+    }
+
+
+
+    header {
+        padding: 30px;
+        margin: 10px;
+        border: solid 1px red;
+        background: linear-gradient(45deg, rgb(93, 178, 226), rgb(93, 226, 95));
     }
 
     .container {
@@ -224,12 +233,21 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
         transform: translateY(-2px);
     }
 
+    .mb-5 {
+        display: flex;
+    }
+
+    .d-grid {
+        padding: 10px;
+    }
+
     .form-title {
-        color: var(--primary-color);
+        color: var(--light-color);
         font-size: 2.5rem;
         text-align: center;
         margin-bottom: 0.5rem;
         font-weight: 700;
+        font-style: bold;
     }
 
     .form-subtitle {
@@ -344,10 +362,12 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
             <i class="fas fa-arrow-left"></i> Volver al Dashboard
         </a>
     </div>
-
-    <div class="container">
+    <header>
         <h1 class="form-title">Sistema Académico</h1>
         <h3 class="form-subtitle">Registro de <span class="highlight">Nuevos Estudiantes</span></h3>
+    </header>
+    <div class="container">
+
 
         <?php if (isset($_SESSION['errores']) && !empty($_SESSION['errores'])): ?>
         <div class="alert alert-danger" role="alert">
@@ -374,7 +394,23 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
         <div class="modal-header">
             <h5 class="modal-title" id="agregarEstudianteModalLabel">Datos Personales</h5>
         </div>
-
+        <div class="mb-5">
+            <div class="d-grid gap-2">
+                <button type="button" name="" id="" class="btn btn-primary">
+                    Manual
+                </button>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="button" name="" id="" class="btn btn-primary">
+                    Escaner Qr
+                </button>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="button" name="" id="" class="btn btn-primary">
+                    User OCR
+                </button>
+            </div>
+        </div>
         <form id="formAgregarEstudiante" action="acciones_estudiantes.php" method="POST">
             <input type="hidden" name="accion" value="agregar">
             <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
