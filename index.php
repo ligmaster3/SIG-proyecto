@@ -336,7 +336,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 
-<body>
+<body class="registro">
 
     <div style="position: absolute; top: 30px; left: 30px; z-index: 1001;">
         <a href="dashboard.php" class="btn btn-secondary"
