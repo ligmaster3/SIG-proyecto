@@ -23,6 +23,8 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión Académica</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 
     <style>
         body {
@@ -61,7 +63,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
 
         main {
             display: flex;
-          
+
         }
 
 
@@ -349,7 +351,11 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
 
             .container {
                 flex: 2;
-            } header {margin-top: 40px;}
+            }
+
+            header {
+                margin-top: 40px;
+            }
 
             .login-container {
                 flex: 1;
@@ -359,12 +365,15 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
             .modal-body {
                 grid-template-columns: 1fr;
             }
+
             .d-grid {
                 display: block;
             }
-            .d-grid, .btn{
-                margin-top: 5x  px;
-               width: 100%;
+
+            .d-grid,
+            .btn {
+                margin-top: 5x px;
+                width: 100%;
             }
 
             .full-width {
@@ -378,6 +387,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
             .form-title {
                 font-size: 2rem;
             }
+
             .form-section {
                 margin: 0px !important;
             }
@@ -394,7 +404,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                 margin: 0;
             }
 
-          
+
         }
 
         /* Ajustes adicionales para mejor responsividad */
@@ -442,6 +452,7 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
             border-radius: var(--border-radius);
             background-color: #f8f9fa;
             box-shadow: var(--box-shadow);
+            border-top: var(--primary-color);
         }
     </style>
 </head>
@@ -586,7 +597,9 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                             <div id="scanner-view"></div>
                         </div>
                         <div class="mb-3">
-                            <button type="button" class="btn btn-danger w-100" id="stopScanner">Detener Escáner</button>
+                            <button type="button" class="btn btn-danger w-100" id="stopScanner">
+                                <i class="fas fa-stop"></i> Detener Escáner
+                            </button>
                         </div>
                     </div>
 
@@ -641,47 +654,221 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
 
 
     <script>
+        // Variables globales
+        let scannerActive = false;
+
         // Control de pestañas del formulario
         document.getElementById('btnManual').addEventListener('click', function() {
-            document.getElementById('formManual').classList.remove('hidden');
-            document.getElementById('formQR').classList.add('hidden');
-            document.getElementById('formOCR').classList.add('hidden');
-            stopScanner();
-            this.classList.add('active', 'btn-primary');
-            this.classList.remove('btn-secondary');
-            document.getElementById('btnQR').classList.remove('active', 'btn-primary');
-            document.getElementById('btnQR').classList.add('btn-secondary');
-            document.getElementById('btnOCR').classList.remove('active', 'btn-primary');
-            document.getElementById('btnOCR').classList.add('btn-secondary');
+            showForm('formManual');
+            updateButtonStyles(this);
         });
 
         document.getElementById('btnQR').addEventListener('click', function() {
-            document.getElementById('formManual').classList.add('hidden');
-            document.getElementById('formQR').classList.remove('hidden');
-            document.getElementById('formOCR').classList.add('hidden');
+            showForm('formQR');
+            updateButtonStyles(this);
             initScanner();
-            this.classList.add('active', 'btn-primary');
-            this.classList.remove('btn-secondary');
-            document.getElementById('btnManual').classList.remove('active', 'btn-primary');
-            document.getElementById('btnManual').classList.add('btn-secondary');
-            document.getElementById('btnOCR').classList.remove('active', 'btn-primary');
-            document.getElementById('btnOCR').classList.add('btn-secondary');
         });
 
         document.getElementById('btnOCR').addEventListener('click', function() {
-            document.getElementById('formManual').classList.add('hidden');
-            document.getElementById('formQR').classList.add('hidden');
-            document.getElementById('formOCR').classList.remove('hidden');
+            showForm('formOCR');
+            updateButtonStyles(this);
             stopScanner();
-            this.classList.add('active', 'btn-primary');
-            this.classList.remove('btn-secondary');
-            document.getElementById('btnManual').classList.remove('active', 'btn-primary');
-            document.getElementById('btnManual').classList.add('btn-secondary');
-            document.getElementById('btnQR').classList.remove('active', 'btn-primary');
-            document.getElementById('btnQR').classList.add('btn-secondary');
         });
 
-        
+        // Función para mostrar el formulario seleccionado
+        function showForm(formId) {
+            // Ocultar todos los formularios
+            document.getElementById('formManual').classList.add('hidden');
+            document.getElementById('formQR').classList.add('hidden');
+            document.getElementById('formOCR').classList.add('hidden');
+
+            // Mostrar el formulario seleccionado
+            document.getElementById(formId).classList.remove('hidden');
+        }
+
+        // Función para actualizar estilos de botones
+        function updateButtonStyles(activeButton) {
+            // Resetear todos los botones
+            const buttons = ['btnManual', 'btnQR', 'btnOCR'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                btn.classList.remove('active', 'btn-primary');
+                btn.classList.add('btn-secondary');
+            });
+
+            // Activar el botón seleccionado
+            activeButton.classList.remove('btn-secondary');
+            activeButton.classList.add('active', 'btn-primary');
+        }
+
+        // Funciones del escáner QR
+        function initScanner() {
+            if (scannerActive) return;
+
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#scanner-view'),
+                    constraints: {
+                        width: 480,
+                        height: 320,
+                        facingMode: "environment"
+                    },
+                },
+                locator: {
+                    patchSize: "medium",
+                    halfSample: true
+                },
+                numOfWorkers: 2,
+                frequency: 10,
+                decoder: {
+                    readers: [{
+                        format: "qrcode_reader",
+                        config: {}
+                    }]
+                },
+                locate: true
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    alert("Error al iniciar el escáner: " + err);
+                    return;
+                }
+                scannerActive = true;
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function(result) {
+                const code = result.codeResult.code;
+                processQRCode(code);
+                stopScanner();
+            });
+        }
+
+        function stopScanner() {
+            if (scannerActive) {
+                Quagga.stop();
+                scannerActive = false;
+            }
+        }
+
+        document.getElementById('stopScanner').addEventListener('click', stopScanner);
+
+        function processQRCode(data) {
+            try {
+                const studentData = JSON.parse(data);
+
+                // Actualizar campos del formulario
+                document.getElementById('codigo').value = studentData.codigo || '';
+                document.getElementById('nombre').value = studentData.nombre || '';
+                document.getElementById('apellido').value = studentData.apellido || '';
+                document.getElementById('genero').value = studentData.genero || '';
+                document.getElementById('carrera').value = studentData.carrera_id || '';
+                document.getElementById('email').value = studentData.email || '';
+
+                // Mostrar confirmación
+                alert(`Datos detectados:\nCódigo: ${studentData.codigo}\nNombre: ${studentData.nombre} ${studentData.apellido}`);
+
+                // Cambiar a vista manual
+                document.getElementById('btnManual').click();
+            } catch (e) {
+                alert("Error al procesar el código QR. Formato incorrecto.");
+                console.error(e);
+            }
+        }
+
+        // Funciones OCR
+        document.getElementById('processOCR').addEventListener('click', function() {
+            const fileInput = document.getElementById('ocrImage');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Por favor seleccione una imagen primero");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                Tesseract.recognize(
+                    e.target.result,
+                    'spa', {
+                        logger: m => console.log(m)
+                    }
+                ).then(({
+                    data: {
+                        text
+                    }
+                }) => {
+                    processOCRText(text);
+                }).catch(err => {
+                    console.error(err);
+                    alert("Error al procesar la imagen con OCR");
+                });
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        function processOCRText(text) {
+            // Expresiones regulares para extraer datos
+            const codigoRegex = /Código:\s*([0-9-]+)/i;
+            const nombreRegex = /Nombre:\s*([^\n]+)/i;
+            const apellidoRegex = /Apellido:\s*([^\n]+)/i;
+            const generoRegex = /Género:\s*(Hombre|Mujer|Otro)/i;
+            const emailRegex = /Email:\s*([^\n]+)/i;
+            const carreraRegex = /Carrera:\s*([^\n]+)/i;
+
+            const matches = {
+                codigo: text.match(codigoRegex),
+                nombre: text.match(nombreRegex),
+                apellido: text.match(apellidoRegex),
+                genero: text.match(generoRegex),
+                email: text.match(emailRegex),
+                carrera: text.match(carreraRegex)
+            };
+
+            if (matches.codigo && matches.nombre && matches.apellido) {
+                // Actualizar campos del formulario
+                document.getElementById('codigo').value = matches.codigo[1].trim();
+                document.getElementById('nombre').value = matches.nombre[1].trim();
+                document.getElementById('apellido').value = matches.apellido[1].trim();
+
+                if (matches.genero) {
+                    document.getElementById('genero').value = matches.genero[1].trim();
+                }
+
+                if (matches.email) {
+                    document.getElementById('email').value = matches.email[1].trim();
+                }
+
+                if (matches.carrera) {
+                    const carreraNombre = matches.carrera[1].trim().toLowerCase();
+                    const carreraSelect = document.getElementById('carrera');
+                    for (let option of carreraSelect.options) {
+                        if (option.text.toLowerCase().includes(carreraNombre)) {
+                            carreraSelect.value = option.value;
+                            break;
+                        }
+                    }
+                }
+
+                // Mostrar confirmación
+                alert(`Datos detectados:\nCódigo: ${matches.codigo[1]}\nNombre: ${matches.nombre[1]} ${matches.apellido[1]}`);
+
+                // Cambiar a vista manual
+                document.getElementById('btnManual').click();
+            } else {
+                alert("No se pudieron detectar todos los datos necesarios en la imagen. Por favor ingréselos manualmente.");
+                console.log("Texto OCR:", text);
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar formulario manual por defecto
+            document.getElementById('btnManual').click();
+        });
     </script>
 </body>
 

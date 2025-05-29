@@ -209,6 +209,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .mt-2 {
             margin-top: 0.5rem;
         }
+
+        .scanner-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            border: 2px dashed #ccc;
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        #scanner-view {
+            width: 100%;
+            height: 300px;
+            background-color: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #scanner-view video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #stopScanner {
+            margin-top: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -243,6 +272,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <button type="submit" class="btn">Iniciar Sesión</button>
             </form>
+
+            <div id="formQR" class="hidden">
+                <div class="scanner-container">
+                    <div id="scanner-view"></div>
+                </div>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-danger w-100" id="stopScanner">
+                        <i class="fas fa-stop"></i> Detener Escáner
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="login-footer">
