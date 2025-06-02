@@ -42,7 +42,7 @@ if (!isset($_SESSION['usuario'])) {
     <div class="dashboard-container">
         <aside class="sidebar">
             <div class="logo-container">
-                <img src="assets/images/logo.png" alt="CRUBA Logo" class="logo">
+                <img src="assets\img\crubabi.png" alt="CRUBA Logo" class="logo">
                 <h1><span>Biblioteca CRUBA</span></h1>
             </div>
             <nav class="sidebar-nav">
@@ -70,11 +70,9 @@ if (!isset($_SESSION['usuario'])) {
                         <a href="reportes.php" title="Reportes"><i class="fas fa-file-alt"></i>
                             <span>Reportes</span></a>
                     </li>
-                    <?php if ($_SESSION['rol'] == 'Administrador'): ?>
                     <li>
                         <a href="#" data-title="Configuración"><i class="fas fa-cog"></i> <span>Configuración</span></a>
                     </li>
-                    <?php endif; ?>
                 </ul>
 
 

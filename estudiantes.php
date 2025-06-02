@@ -14,7 +14,7 @@ $busqueda = isset($_GET['busqueda']) ? trim($_GET['busqueda']) : '';
 // Obtener total de estudiantes
 if ($busqueda) {
     $sql_total = "SELECT COUNT(*) as total FROM estudiantes 
-                  WHERE nombre LIKE :busqueda OR apellido LIKE :busqueda OR codigo_estudiante LIKE :busqueda";
+                  WHERE nombre LIKE :busqueda OR apellido LIKE :busqueda OR cedula LIKE :busqueda";
     $stmt_total = ejecutarConsulta($sql_total, [':busqueda' => "%$busqueda%"]);
 } else {
     $sql_total = "SELECT COUNT(*) as total FROM estudiantes";
@@ -22,53 +22,44 @@ if ($busqueda) {
 }
 $total_estudiantes = $stmt_total->fetch(PDO::FETCH_ASSOC)['total'];
 $total_paginas = ceil($total_estudiantes / $por_pagina);
-
 // Obtener estudiantes
 if ($busqueda) {
-    $sql = "SELECT e.*, c.nombre_carrera, f.nombre_facultad,
-                   (
-                       SELECT ra.fecha_entrada FROM registro_asistencia ra 
-                       WHERE ra.id_estudiante = e.id_estudiante 
-                       ORDER BY ra.fecha_entrada DESC LIMIT 1
-                   ) as hora_entrada,
-                   (
-                       SELECT ra.fecha_salida FROM registro_asistencia ra 
-                       WHERE ra.id_estudiante = e.id_estudiante 
-                       ORDER BY ra.fecha_entrada DESC LIMIT 1
-                   ) as hora_salida
+    $sql = "SELECT e.*, c.nombre_carrera, f.nombre_facultad, p.turno
             FROM estudiantes e
             JOIN carreras c ON e.id_carrera = c.id_carrera
             JOIN facultades f ON c.id_facultad = f.id_facultad
-            WHERE e.nombre LIKE :busqueda OR e.apellido LIKE :busqueda OR e.codigo_estudiante LIKE :busqueda
+            LEFT JOIN (
+                SELECT pr1.id_estudiante, pr1.turno
+                FROM prestamos pr1
+                INNER JOIN (
+                    SELECT id_estudiante, MAX(id_prestamo) AS max_prestamo
+                    FROM prestamos
+                    GROUP BY id_estudiante
+                ) pr2 ON pr1.id_estudiante = pr2.id_estudiante AND pr1.id_prestamo = pr2.max_prestamo
+            ) p ON e.id_estudiante = p.id_estudiante
+            WHERE e.nombre LIKE :busqueda OR e.apellido LIKE :busqueda OR e.cedula LIKE :busqueda
             ORDER BY e.apellido, e.nombre
             LIMIT $inicio, $por_pagina";
     $stmt = ejecutarConsulta($sql, [':busqueda' => "%$busqueda%"]);
 } else {
-    $sql = "SELECT e.*, c.nombre_carrera, f.nombre_facultad,
-                   (
-                       SELECT ra.fecha_entrada FROM registro_asistencia ra 
-                       WHERE ra.id_estudiante = e.id_estudiante 
-                       ORDER BY ra.fecha_entrada DESC LIMIT 1
-                   ) as hora_entrada,
-                   (
-                       SELECT ra.fecha_salida FROM registro_asistencia ra 
-                       WHERE ra.id_estudiante = e.id_estudiante 
-                       ORDER BY ra.fecha_entrada DESC LIMIT 1
-                   ) as hora_salida
+    $sql = "SELECT e.*, c.nombre_carrera, f.nombre_facultad, p.turno
             FROM estudiantes e
             JOIN carreras c ON e.id_carrera = c.id_carrera
             JOIN facultades f ON c.id_facultad = f.id_facultad
+            LEFT JOIN (
+                SELECT pr1.id_estudiante, pr1.turno
+                FROM prestamos pr1
+                INNER JOIN (
+                    SELECT id_estudiante, MAX(id_prestamo) AS max_prestamo
+                    FROM prestamos
+                    GROUP BY id_estudiante
+                ) pr2 ON pr1.id_estudiante = pr2.id_estudiante AND pr1.id_prestamo = pr2.max_prestamo
+            ) p ON e.id_estudiante = p.id_estudiante
             ORDER BY e.apellido, e.nombre
             LIMIT $inicio, $por_pagina";
     $stmt = ejecutarConsulta($sql);
 }
 $estudiantes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$registros_academicos = [];
-foreach ($estudiantes as $est) {
-    $stmt_reg = ejecutarConsulta("SELECT fecha_entrada, fecha_salida FROM registro_asistencia WHERE id_estudiante = ? ORDER BY fecha_entrada DESC LIMIT 5", [$est['id_estudiante']]);
-    $registros_academicos[$est['id_estudiante']] = $stmt_reg->fetchAll(PDO::FETCH_ASSOC);
-}
 
 // Obtener carreras para el formulario
 $stmt_carreras = ejecutarConsulta("
@@ -79,7 +70,10 @@ $stmt_carreras = ejecutarConsulta("
 ");
 $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
 
-// Obtener registros académicos (asistencia) para cada estudiante
+// Puedes agregar aquí la obtención de préstamos si necesitas mostrar más información
+// Ejemplo para obtener todos los préstamos (opcional):
+// $stmt_prestamos = ejecutarConsulta("SELECT * FROM prestamos");
+// $prestamos = $stmt_prestamos->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -126,29 +120,25 @@ $carreras = $stmt_carreras->fetchAll(PDO::FETCH_ASSOC);
                             <th>Carrera</th>
                             <th>Facultad</th>
                             <th>Género</th>
-                            <th>Hora de entrada</th>
-                            <th>Hora de Salida</th>
+                            <th>turno</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($estudiantes as $estudiante): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?></td>
+                            <td><?php echo htmlspecialchars($estudiante['cedula']); ?></td>
                             <td><?php echo htmlspecialchars($estudiante['apellido'] . ', ' . $estudiante['nombre']); ?>
                             </td>
                             <td><?php echo htmlspecialchars($estudiante['nombre_carrera']); ?></td>
                             <td><?php echo htmlspecialchars($estudiante['nombre_facultad']); ?></td>
                             <td><?php echo htmlspecialchars($estudiante['genero']); ?></td>
-                            <td><?php echo htmlspecialchars($estudiante['hora_entrada'] ? date('d/m/Y H:i', strtotime($estudiante['hora_entrada'])) : '-'); ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($estudiante['hora_salida'] ? date('d/m/Y H:i', strtotime($estudiante['hora_salida'])) : '-'); ?>
-                            </td>
+                            <td><?php echo htmlspecialchars($estudiante['turno']) ?></td>
                             <td>
                                 <button class="btn btn-sm btn-warning btn-editar" data-toggle="modal"
                                     data-target="#editarEstudianteModal"
                                     data-id="<?php echo $estudiante['id_estudiante']; ?>"
-                                    data-codigo="<?php echo htmlspecialchars($estudiante['codigo_estudiante']); ?>"
+                                    data-codigo="<?php echo htmlspecialchars($estudiante['cedula']); ?>"
                                     data-nombre="<?php echo htmlspecialchars($estudiante['nombre']); ?>"
                                     data-apellido="<?php echo htmlspecialchars($estudiante['apellido']); ?>"
                                     data-genero="<?php echo $estudiante['genero']; ?>"

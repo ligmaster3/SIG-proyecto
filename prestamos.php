@@ -36,7 +36,7 @@ $total_paginas = ceil($total_prestamos / $por_pagina);
 
 // Obtener préstamos
 $sql = "SELECT p.*, 
-               e.nombre as estudiante_nombre, e.apellido as estudiante_apellido, e.codigo_estudiante,
+               e.nombre as estudiante_nombre, e.apellido as estudiante_apellido, e.cedula,
                l.titulo as libro_titulo, l.autor as libro_autor,
                DATEDIFF(p.fecha_devolucion_estimada, CURDATE()) as dias_restantes
         FROM prestamos p
@@ -137,7 +137,7 @@ $prestamos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td>
                                     <?php echo htmlspecialchars($prestamo['estudiante_apellido'] . ', ' . $prestamo['estudiante_nombre']); ?>
                                     <br><small
-                                        class="text-muted"><?php echo htmlspecialchars($prestamo['codigo_estudiante']); ?></small>
+                                        class="text-muted"><?php echo htmlspecialchars($prestamo['cedula']); ?></small>
                                 </td>
                                 <td>
                                     <?php echo htmlspecialchars($prestamo['libro_titulo']); ?>
@@ -243,7 +243,7 @@ $prestamos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <option value="">Seleccione un estudiante</option>
                                     <?php
                                     $stmt_estudiantes = ejecutarConsulta("
-                                        SELECT e.id_estudiante, e.nombre, e.apellido, e.codigo_estudiante, c.nombre_carrera
+                                        SELECT e.id_estudiante, e.nombre, e.apellido, e.cedula, c.nombre_carrera
                                         FROM estudiantes e
                                         JOIN carreras c ON e.id_carrera = c.id_carrera
                                         ORDER BY e.apellido, e.nombre
@@ -252,7 +252,7 @@ $prestamos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     foreach ($estudiantes as $estudiante):
                                     ?>
                                     <option value="<?= $estudiante['id_estudiante']; ?>">
-                                        <?= htmlspecialchars($estudiante['apellido'] . ', ' . $estudiante['nombre'] . ' (' . $estudiante['codigo_estudiante'] . ') - ' . $estudiante['nombre_carrera']); ?>
+                                        <?= htmlspecialchars($estudiante['apellido'] . ', ' . $estudiante['nombre'] . ' (' . $estudiante['cedula'] . ') - ' . $estudiante['nombre_carrera']); ?>
                                     </option>
                                     <?php endforeach; ?>
                                 </select>

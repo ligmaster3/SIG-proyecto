@@ -72,43 +72,43 @@ $historial_prestamos = obtenerHistorialPrestamos($id_estudiante, null, 10);
         </div>
         <div class="card-body">
             <?php if (count($prestamos_activos) > 0): ?>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Libro</th>
-                                <th>Fecha Préstamo</th>
-                                <th>Fecha Devolución</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($prestamos_activos as $prestamo): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($prestamo['titulo']); ?></td>
-                                    <td><?php echo date('d/m/Y', strtotime($prestamo['fecha_prestamo'])); ?></td>
-                                    <td><?php echo date('d/m/Y', strtotime($prestamo['fecha_devolucion_estimada'])); ?></td>
-                                    <td>
-                                        <?php if ($prestamo['estado'] == 'Pendiente'): ?>
-                                            <span class="badge badge-warning">Pendiente</span>
-                                        <?php else: ?>
-                                            <span class="badge badge-danger">Atrasado</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-success btn-devolver"
-                                            data-id="<?php echo $prestamo['id_prestamo']; ?>">
-                                            <i class="fas fa-check"></i> Devolver
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Libro</th>
+                            <th>Fecha Préstamo</th>
+                            <th>Fecha Devolución</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($prestamos_activos as $prestamo): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($prestamo['titulo']); ?></td>
+                            <td><?php echo date('d/m/Y', strtotime($prestamo['fecha_prestamo'])); ?></td>
+                            <td><?php echo date('d/m/Y', strtotime($prestamo['fecha_devolucion_estimada'])); ?></td>
+                            <td>
+                                <?php if ($prestamo['estado'] == 'Pendiente'): ?>
+                                <span class="badge badge-warning">Pendiente</span>
+                                <?php else: ?>
+                                <span class="badge badge-danger">Atrasado</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-success btn-devolver"
+                                    data-id="<?php echo $prestamo['id_prestamo']; ?>">
+                                    <i class="fas fa-check"></i> Devolver
+                                </button>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
             <?php else: ?>
-                <div class="alert alert-info">El estudiante no tiene préstamos activos</div>
+            <div class="alert alert-info">El estudiante no tiene préstamos activos</div>
             <?php endif; ?>
         </div>
     </div>
@@ -135,27 +135,27 @@ $historial_prestamos = obtenerHistorialPrestamos($id_estudiante, null, 10);
                     </thead>
                     <tbody>
                         <?php foreach ($historial_prestamos as $prestamo): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($prestamo['libro_titulo']); ?></td>
-                                <td><?php echo date('d/m/Y', strtotime($prestamo['fecha_prestamo'])); ?></td>
-                                <td><?php echo date('d/m/Y', strtotime($prestamo['fecha_devolucion_estimada'])); ?></td>
-                                <td>
-                                    <?php if ($prestamo['fecha_devolucion_real']): ?>
-                                        <?php echo date('d/m/Y', strtotime($prestamo['fecha_devolucion_real'])); ?>
-                                    <?php else: ?>
-                                        <span class="text-muted">-</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if ($prestamo['estado'] == 'Pendiente'): ?>
-                                        <span class="badge badge-warning">Pendiente</span>
-                                    <?php elseif ($prestamo['estado'] == 'Devuelto'): ?>
-                                        <span class="badge badge-success">Devuelto</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-danger">Atrasado</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td><?php echo htmlspecialchars($prestamo['libro_titulo']); ?></td>
+                            <td><?php echo date('d/m/Y', strtotime($prestamo['fecha_prestamo'])); ?></td>
+                            <td><?php echo date('d/m/Y', strtotime($prestamo['fecha_devolucion_estimada'])); ?></td>
+                            <td>
+                                <?php if ($prestamo['fecha_devolucion_real']): ?>
+                                <?php echo date('d/m/Y', strtotime($prestamo['fecha_devolucion_real'])); ?>
+                                <?php else: ?>
+                                <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($prestamo['estado'] == 'Pendiente'): ?>
+                                <span class="badge badge-warning">Pendiente</span>
+                                <?php elseif ($prestamo['estado'] == 'Devuelto'): ?>
+                                <span class="badge badge-success">Devuelto</span>
+                                <?php else: ?>
+                                <span class="badge badge-danger">Atrasado</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -192,33 +192,33 @@ $historial_prestamos = obtenerHistorialPrestamos($id_estudiante, null, 10);
 </div>
 
 <script>
-    $(document).ready(function() {
-        // Mostrar modal de confirmación de devolución
-        $('.btn-devolver').click(function() {
-            var id = $(this).data('id');
-            $('#devolver_id_prestamo').val(id);
-            $('#confirmarDevolucionModal').modal('show');
-        });
+$(document).ready(function() {
+    // Mostrar modal de confirmación de devolución
+    $('.btn-devolver').click(function() {
+        var id = $(this).data('id');
+        $('#devolver_id_prestamo').val(id);
+        $('#confirmarDevolucionModal').modal('show');
+    });
 
-        // Manejar envío de formulario de devolución con AJAX
-        $('#formDevolverPrestamo').submit(function(e) {
-            e.preventDefault();
-            var form = $(this);
-            var formData = form.serialize();
-            var url = form.attr('action');
+    // Manejar envío de formulario de devolución con AJAX
+    $('#formDevolverPrestamo').submit(function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var formData = form.serialize();
+        var url = form.attr('action');
 
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: formData,
-                dataType: 'json',
-                success: function(response) {
-                    manejarExitoAjax(response);
-                },
-                error: manejarErrorAjax
-            });
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                manejarExitoAjax(response);
+            },
+            error: manejarErrorAjax
         });
     });
+});
 </script>
 
 <?php

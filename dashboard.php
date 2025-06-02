@@ -19,6 +19,7 @@ require_once 'components/funciones.php';
     <link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
 
+
 <div class="dashboard-grid">
     <!-- Tarjeta de resumen -->
     <div class="card summary-card">
